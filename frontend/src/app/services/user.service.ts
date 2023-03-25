@@ -9,10 +9,12 @@ import { User } from '../shared/models/User';
 
 const USER_KEY = 'User';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-  private userSubject = new BehaviorSubject<User>(this.getUserFromLocalStorage());
+  private userSubject = new BehaviorSubject<User>(
+    this.getUserFromLocalStorage()
+  );
   public userObservable: Observable<User>;
 
   constructor(private http: HttpClient, private toastrService: ToastrService) {
@@ -20,19 +22,21 @@ export class UserService {
   }
 
   login(userLogin: IUserLogin): Observable<User> {
-    return this.http.post<User>(USER_LOGIN_URL, userLogin).pipe(tap({
-      next: (user) => {
-        this.setUserToLocalStorage(user);
-        this.userSubject.next(user);
-        this.toastrService.success(
-          `Welcome to Foodmine ${user.name}`,
-          `Login Successful`
-        )
-      },
-      error: (errorResponse) => {
-        this.toastrService.error(errorResponse.error, 'Login Failed');
-      }
-    }))
+    return this.http.post<User>(USER_LOGIN_URL, userLogin).pipe(
+      tap({
+        next: (user) => {
+          this.setUserToLocalStorage(user);
+          this.userSubject.next(user);
+          this.toastrService.success(
+            `Hey Welcome to Foodmine ${user.name}`,
+            `Login Successful`
+          );
+        },
+        error: (errorResponse) => {
+          this.toastrService.error(errorResponse.error, 'Login Failed');
+        },
+      })
+    );
   }
 
   register(userRegister: IUserRegister): Observable<User> {
@@ -44,13 +48,13 @@ export class UserService {
           this.toastrService.success(
             `Welcome to the Foodmine ${user.name}`,
             'Register Successful'
-          )
+          );
         },
         error: (errorResponse) => {
           this.toastrService.error(errorResponse.error, 'Register Failed');
-        }
+        },
       })
-    )
+    );
   }
 
   logout() {
